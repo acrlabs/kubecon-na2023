@@ -45,6 +45,7 @@ spec:
         - args:
             - /conjob-ctrl
           image: localhost:5000/conjob-controller:latest
+          imagePullPolicy: Always
           name: ctrl
           securityContext:
             capabilities:

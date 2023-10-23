@@ -34,10 +34,10 @@ spec:
           spec:
             description: ConJobSpec defines the desired state of ConJob
             properties:
-              foo:
-                description: Foo is an example field of ConJob. Edit conjob_types.go
-                  to remove/update
-                type: string
+              delay:
+                description: How long to wait between launching new pods
+                format: int32
+                type: integer
             type: object
           status:
             description: ConJobStatus defines the observed state of ConJob

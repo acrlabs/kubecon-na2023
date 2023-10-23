@@ -32,7 +32,6 @@ linters:
     - unused
     - usestdlibvars
     - whitespace
-    - wrapcheck
 
 linters-settings:
   errcheck:
@@ -43,7 +42,7 @@ linters-settings:
     sections:
       - standard
       - default
-      - prefix(simkube)
+      - prefix(github.com/acrlabs/kubecon-na2023)
       - blank
       - dot
 
@@ -65,16 +64,3 @@ linters-settings:
       - gochecknoglobals
     require-explanation: true
     require-specific: true
-
-  wrapcheck:
-    ignoreSigs:
-      - .Errorf(
-      - errors.New(
-      - errors.Unwrap(
-      - errors.Join(
-      - .Wrap(
-      - .Wrapf(
-      - .WithMessage(
-      - .WithMessagef(
-      - .WithStack(
-      - mock.Arguments).Error

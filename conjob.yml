@@ -1,13 +1,8 @@
 ---
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: conjobs
----
 apiVersion: kubecon.appliedcomputing.io/v1
 kind: ConJob
 metadata:
   name: the-con-job
   namespace: conjobs
 spec:
-  foo: bar
+  delay: 30

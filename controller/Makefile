@@ -4,6 +4,8 @@ all: manifests generate build image run
 
 manifests:
 	controller-gen rbac:roleName=conjob-manager-role crd paths="./..." output:dir=manifests/
+	mv manifests/role.yaml manifests/0002-role.yml
+	mv manifests/kubecon.appliedcomputing.io_conjobs.yaml manifests/0001-conjob-crd.yml
 
 generate:
 	controller-gen object paths="./..."
