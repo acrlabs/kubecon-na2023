@@ -1,0 +1,96 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: simkube
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sk-tracer-configmap-c860a579
+  namespace: simkube
+data:
+  tracer-config.yml: |
+    ---
+    trackedObjects:
+      apps/v1.Deployment:
+        podSpecTemplatePath: /spec/template
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: sk-tracer-service-account-c8f41577
+  namespace: simkube
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: sk-tracer-cluster-role-binding-c8b0436a
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+  - kind: ServiceAccount
+    name: sk-tracer-service-account-c8f41577
+    namespace: simkube
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sk-tracer-service-c8512652
+  namespace: simkube
+spec:
+  ports:
+    - port: 7777
+      targetPort: 7777
+  selector:
+    app: sk-tracer
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: sk-tracer
+  name: sk-tracer-deployment-c8ae44bd
+  namespace: simkube
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sk-tracer
+  template:
+    metadata:
+      labels:
+        app: sk-tracer
+      namespace: simkube
+    spec:
+      containers:
+        - args:
+            - /sk-tracer
+            - --server-port
+            - "7777"
+            - -c
+            - /config/tracer-config.yml
+          env:
+            - name: RUST_BACKTRACE
+              value: "1"
+            - name: POD_OWNER
+              value: sk-tracer-deployment-c8ae44bd
+          image: localhost:5000/sk-tracer:a92c17d-d69b3e96de6f166a7e4612b30e19c8d1bdf0ca7c
+          name: sk-tracer
+          ports:
+            - containerPort: 7777
+          volumeMounts:
+            - mountPath: /config
+              name: tracer-config
+      nodeSelector:
+        kubernetes.io/hostname: production-worker
+      serviceAccountName: sk-tracer-service-account-c8f41577
+      volumes:
+        - configMap:
+            items:
+              - key: tracer-config.yml
+                path: tracer-config.yml
+            name: sk-tracer-configmap-c860a579
+          name: tracer-config
