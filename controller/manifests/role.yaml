@@ -1,0 +1,32 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: conjob-manager-role
+rules:
+- apiGroups:
+  - kubecon.appliedcomputing.io
+  resources:
+  - conjobs
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - kubecon.appliedcomputing.io
+  resources:
+  - conjobs/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - kubecon.appliedcomputing.io
+  resources:
+  - conjobs/status
+  verbs:
+  - get
+  - patch
+  - update
