@@ -5,4 +5,17 @@ metadata:
   name: the-con-job
   namespace: conjobs
 spec:
-  delay: 30
+  delay: 10
+  pods: 10
+  template:
+    spec:
+      containers:
+        - name: runner
+          image: nginx
+          command:
+            - sleep
+          args:
+            - infinity
+          resources:
+            requests:
+              memory: 512Mi

@@ -13,7 +13,7 @@ data:
   tracer-config.yml: |
     ---
     trackedObjects:
-      apps/v1.Deployment:
+      kubecon.appliedcomputing.io/v1.ConJob:
         podSpecTemplatePath: /spec/template
 ---
 apiVersion: v1
@@ -77,7 +77,7 @@ spec:
               value: "1"
             - name: POD_OWNER
               value: sk-tracer-deployment-c8ae44bd
-          image: localhost:5000/sk-tracer:a92c17d-d69b3e96de6f166a7e4612b30e19c8d1bdf0ca7c
+          image: localhost:5000/sk-tracer:770c3e2-b68ea00e9c666b272e6c3fc53a8ff0fb76f414d0
           name: sk-tracer
           ports:
             - containerPort: 7777
@@ -85,7 +85,7 @@ spec:
             - mountPath: /config
               name: tracer-config
       nodeSelector:
-        kubernetes.io/hostname: production-worker
+        type: kind-worker
       serviceAccountName: sk-tracer-service-account-c8f41577
       volumes:
         - configMap:

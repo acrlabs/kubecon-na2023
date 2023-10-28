@@ -6,6 +6,8 @@ containerdConfigPatches:
     config_path = "/etc/containerd/certs.d"
 nodes:
   - role: control-plane
+    labels:
+      type: kind-control-plane
     kubeadmConfigPatches:
       - |
         kind: InitConfiguration
@@ -14,3 +16,11 @@ nodes:
             authentication-token-webhook: "true"
             authorization-mode: Webhook
   - role: worker
+    labels:
+      type: kind-worker
+    kubeadmConfigPatches:
+      - |
+        kind: JoinConfiguration
+        nodeRegistration:
+          kubeletExtraArgs:
+            max-pods: "1000000"

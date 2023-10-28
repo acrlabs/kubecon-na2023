@@ -16,12 +16,11 @@ kind:
 kube-prometheus/manifests: kube-prometheus/kind.jsonnet
 	cd kube-prometheus && ./build.sh kind.jsonnet
 
-prometheus: kube-prometheus/manifests
+prometheus:
 	kubectl apply --server-side -f kube-prometheus/manifests/setup
 	kubectl wait --for condition=Established --all CustomResourceDefinition --namespace=monitoring
 	kubectl apply -f kube-prometheus/manifests
 	kubectl patch -n monitoring ds node-exporter --patch-file kube-prometheus/patches/node-exporter.yml
 
 clean:
-	rm -rf kube-prometheus/manifests
 	kind delete cluster --name $(KIND_CLUSTER_NAME)

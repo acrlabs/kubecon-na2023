@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"math/rand"
 	"os"
 	"sync"
 	"time"
@@ -21,10 +22,13 @@ import (
 	kubeconv1 "github.com/acrlabs/kubecon-na2023/controller/api/v1"
 )
 
+const suffixLen = 5
+
 //nolint:gochecknoglobals
 var (
 	conjobScheme = runtime.NewScheme()
 	setupLog     = ctrl.Log.WithName("setup")
+	letters      = []rune("abcdefghijklmnopqrstuvwxyz0123456789")
 )
 
 // ConJobReconciler reconciles a ConJob object
@@ -40,24 +44,27 @@ type ConJobReconciler struct {
 //+kubebuilder:rbac:groups=kubecon.appliedcomputing.io,resources=conjobs/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=kubecon.appliedcomputing.io,resources=conjobs/finalizers,verbs=update
 
-func buildPod(conJob *kubeconv1.ConJob, scheme *runtime.Scheme, id int) (*corev1.Pod, error) {
-	pod := &corev1.Pod{
-		ObjectMeta: metav1.ObjectMeta{
-			Namespace: conJob.ObjectMeta.Namespace,
-			Name:      fmt.Sprintf("%s-%d", conJob.ObjectMeta.Name, id),
-		},
-		Spec: corev1.PodSpec{
-			Containers: []corev1.Container{
-				{
-					Name:    "runner",
-					Image:   "alpine:3",
-					Command: []string{"sleep"},
-					Args:    []string{"infinity"},
-				},
-			},
-		},
+func buildPod(conJob *kubeconv1.ConJob, scheme *runtime.Scheme) (*corev1.Pod, error) {
+	suffix := make([]rune, suffixLen)
+	for i := range suffix {
+		suffix[i] = letters[rand.Intn(len(letters))]
 	}
 
+	pod := &corev1.Pod{
+		ObjectMeta: metav1.ObjectMeta{
+			Namespace:   conJob.ObjectMeta.Namespace,
+			Name:        fmt.Sprintf("%s-%s", conJob.ObjectMeta.Name, string(suffix)),
+			Annotations: make(map[string]string),
+			Labels:      make(map[string]string),
+		},
+		Spec: *conJob.Spec.Template.Spec.DeepCopy(),
+	}
+	for k, v := range conJob.Spec.Template.Annotations {
+		pod.Annotations[k] = v
+	}
+	for k, v := range conJob.Spec.Template.Labels {
+		pod.Labels[k] = v
+	}
 	if err := ctrl.SetControllerReference(conJob, pod, scheme); err != nil {
 		return nil, err
 	}
@@ -69,8 +76,6 @@ func (self *ConJobReconciler) doWork(ctx context.Context, namespacedName types.N
 	defer self.running.Unlock()
 
 	logger := log.FromContext(ctx)
-	podsToLaunch := 1
-	id := 0
 	for {
 		var conJob kubeconv1.ConJob
 		if err := self.client.Get(ctx, namespacedName, &conJob); err != nil {
@@ -78,25 +83,23 @@ func (self *ConJobReconciler) doWork(ctx context.Context, namespacedName types.N
 			break
 		}
 
-		logger.Info("creating pod objects", "count", podsToLaunch)
-		for i := 0; i < podsToLaunch; i++ {
-			pod, err := buildPod(&conJob, self.scheme, id)
-			if err != nil {
-				logger.Error(err, "could not build pod object")
-				break
-			}
+		go func() {
+			logger.Info("creating pod objects")
 
-			//nolint:contextcheck // this should run in the background indefinitely
-			if err := self.client.Create(context.Background(), pod); err != nil {
-				logger.Error(err, "could not create pod")
-				break
+			for i := int32(0); i < conJob.Spec.Pods; i++ {
+				pod, err := buildPod(&conJob, self.scheme)
+				if err != nil {
+					logger.Error(err, "could not build pod object")
+				}
+
+				if err := self.client.Create(context.Background(), pod); err != nil {
+					logger.Error(err, "could not create pod")
+				}
 			}
-			id += 1
-		}
+		}()
 
 		logger.Info("sleeping", "delay", conJob.Spec.Delay)
 		time.Sleep(time.Duration(conJob.Spec.Delay) * time.Second)
-		podsToLaunch *= 2
 	}
 }
 

@@ -1,13 +1,18 @@
 package v1
 
 import (
+	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 // ConJobSpec defines the desired state of ConJob
 type ConJobSpec struct {
+	// How many pods to launch per iteration
+	Pods int32 `json:"pods,omitempty"`
 	// How long to wait between launching new pods
 	Delay int32 `json:"delay,omitempty"`
+	// Pod spec template
+	Template corev1.PodTemplateSpec `json:"template,omitempty"`
 }
 
 // ConJobStatus defines the observed state of ConJob
