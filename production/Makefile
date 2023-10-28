@@ -11,7 +11,8 @@ kind:
 	CLUSTER_NAME=${KIND_CLUSTER_NAME} ./registry-certs.sh
 	kubectl apply -f local-registry-hosting.yml
 	kubectl patch -n kube-system ds kindnet --patch-file kindnet-patch.yml
-	kubectl apply -f sk-tracer.yml
+	kubectl apply -f 0001-conjob-crd.yml
+	kubectl apply -f 0002-sk-tracer.yml
 
 kube-prometheus/manifests: kube-prometheus/kind.jsonnet
 	cd kube-prometheus && ./build.sh kind.jsonnet
