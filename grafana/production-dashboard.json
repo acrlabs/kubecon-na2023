@@ -18,7 +18,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 28,
+  "id": 1,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -201,12 +201,12 @@
           },
           "editorMode": "code",
           "expr": "sum(kube_pod_container_resource_requests{namespace=\"conjobs\", resource=\"memory\"})",
-          "legendFormat": "__auto",
+          "legendFormat": "Total Pod Memory Requests",
           "range": true,
           "refId": "A"
         }
       ],
-      "title": "Simulated Pod Memory Requests",
+      "title": "Pod Memory Requests",
       "type": "timeseries"
     },
     {
@@ -303,7 +303,7 @@
       "type": "timeseries"
     }
   ],
-  "refresh": "30s",
+  "refresh": "10s",
   "schemaVersion": 38,
   "style": "dark",
   "tags": [],
