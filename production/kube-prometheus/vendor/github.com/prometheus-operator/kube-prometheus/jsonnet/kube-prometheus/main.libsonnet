@@ -70,11 +70,6 @@ local utils = import './lib/utils.libsonnet';
       image: $.values.common.images.grafana,
       prometheusName: $.values.prometheus.name,
       // TODO(paulfantom) This should be done by iterating over all objects and looking for object.mixin.grafanaDashboards
-      dashboards: $.nodeExporter.mixin.grafanaDashboards +
-                  $.prometheus.mixin.grafanaDashboards +
-                  $.kubernetesControlPlane.mixin.grafanaDashboards +
-                  $.alertmanager.mixin.grafanaDashboards +
-                  $.grafana.mixin.grafanaDashboards,
       mixin+: { ruleLabels: $.values.common.ruleLabels },
     },
     kubeStateMetrics: {

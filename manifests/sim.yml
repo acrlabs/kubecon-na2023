@@ -1,0 +1,7 @@
+apiVersion: simkube.io/v1alpha1
+kind: Simulation
+metadata:
+  name: testing
+spec:
+  driverNamespace: simkube
+  trace: file:///data/trace

@@ -31,6 +31,13 @@ local kp =
         },
       },
     },
+    grafana+: {
+      config+: {
+        stringData+: {
+          'grafana.ini'+: '[auth.anonymous]\nenabled=true\norg_name="Main Org."\norg_role=Editor'
+        },
+      },
+    },
   };
 
 { 'setup/0namespace-namespace': kp.kubePrometheus.namespace } +
