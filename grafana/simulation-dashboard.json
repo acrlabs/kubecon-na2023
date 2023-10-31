@@ -81,7 +81,7 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 16,
+        "h": 14,
         "w": 8,
         "x": 0,
         "y": 0
@@ -175,7 +175,7 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 16,
+        "h": 14,
         "w": 8,
         "x": 8,
         "y": 0
@@ -268,7 +268,7 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 16,
+        "h": 14,
         "w": 8,
         "x": 16,
         "y": 0
@@ -318,6 +318,6 @@
   "timezone": "",
   "title": "Simulation Data",
   "uid": "f750e3ad-0733-4d81-8a58-2f28c237f3c2",
-  "version": 3,
+  "version": 2,
   "weekStart": ""
 }

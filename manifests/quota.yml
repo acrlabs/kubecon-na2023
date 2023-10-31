@@ -4,4 +4,4 @@ metadata:
   name: limit-memory
 spec:
   hard:
-    memory: 50Gi
+    memory: 30Gi
